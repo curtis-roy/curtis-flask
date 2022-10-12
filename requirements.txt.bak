@@ -41,7 +41,6 @@ ipywidgets==7.5.0
 isodate==0.6.1
 jedi==0.14.0
 Jinja2==2.10.1
-jinja2-cli==0.8.2
 jmespath==0.9.4
 jsonschema==3.0.1
 jupyter==1.0.0
@@ -102,11 +101,10 @@ tomli==2.0.1
 tornado==6.0.3
 traitlets==4.3.2
 typed-ast==1.5.4
-typing-extensions==4.3.0
+typing_extensions==4.3.0
 urllib3==1.25.3
 wcwidth==0.1.7
 webencodings==0.5.1
 widgetsnbextension==3.5.0
 xlrd==2.0.1
-yamllint==1.28.0
 zipp==3.8.1
