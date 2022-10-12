@@ -1,26 +1,52 @@
 ---
 - name: Setup mysql
   hosts: db
+  become: true
+  become_method: sudo
   tasks:
-    # - name: Install dependencies
-    #   apt:
-    # - name: Allow all hosts to connect
-    #   shell:
-    # - name: Start the mysql
-    #   service:
-    # - name: Create database
-    #   mysql_db:
-    # - name: Create database users
-    #   mysql_user:
+    - name: Install Python
+      ansible.builtin.apt:
+        pkg:
+          - python3
+          - python3-setuptools
+          - python3-dev
+          - build-essential
+          - python3-pip
+          - python3-mysqldb
+    - name: Install Python dependencies
+      ansible.builtin.pip:
+        name:
+          - configparser
+          - flask
+          - flask-sqlalchemy
+      # LEFT OFF HERE, PICK UP TOMORROW.
+      # PASSING YAMLLINT AND "--check" up to this point
+      # - name: Allow all hosts to connect
+      #   shell:
+      # - name: Start the mysql
+      #   service:
+      # - name: Create database
+      #   mysql_db:
+      # - name: Create database users
+      #   mysql_user:
 - name: Setup guestbook application
   hosts: web
+  become: true
+  become_method: sudo
   tasks:
-    # - name: Install dependencies
-    #   apt:
-    # - name: Install flask
-    #   pip:
-    # - name: Download guestbook source code
-    #   git:
+    - name: Install Python and its dependencies
+      ansible.builtin.apt:
+        pkg:
+          - python3
+          - python3-setuptools
+          - python3-dev
+          - build-essential
+          - python3-pip
+          - python3-mysqldb
+      # - name: Install flask
+      #   pip:
+      # - name: Download guestbook source code
+      #   git:
     - name: Check if application is running
       shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
       register: process_id
@@ -28,5 +54,5 @@
     - name: Stop the application
       shell: "kill {{ process_id.stdout }}"
       when: process_id.stdout != ""
-    # - name: Start the application
-    #   shell:
+      # - name: Start the application
+      #   shell:
