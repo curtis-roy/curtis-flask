@@ -6,7 +6,7 @@ This is used in the demonstration of development of Ansible Playbooks.
   - Start Web Server
 
 ## 1. Install system dependencies:
-## DONE, both web and db, verified w/yamllint and --check
+###     ---> DONE, both web and db, verified w/yamllint and '--check'
 
   Python and its dependencies
 
@@ -14,7 +14,7 @@ This is used in the demonstration of development of Ansible Playbooks.
 
 
 ## 2. Install application dependencies:
-## DONE, both web and db, verified w/yamllint and --check
+###     ---> DONE, both web and db, verified w/yamllint and '--check'
 
 Install python dependencies
 
@@ -23,12 +23,12 @@ Install python dependencies
     pip3 install flask-sqlalchemy
 
 ## 3. Download the application:
-## DONE, web only, verified w/yamllint and --check
+###     ---> DONE, web only, verified w/yamllint and '--check'
 
     git clone https://github.com/jrrickerson/flask-guestbook /opt/flask-guestbook
 
 ## 4. Start Web Server
-## 4a. "kill" step was pre-done
+###     ---> 4a.  The "kill" step was pre-done by JR
 
 Ensure the application is not already running
   
@@ -50,14 +50,17 @@ Start web server in a background process
 
 ## 1. Install and Configure Database
 
- Install MySQL database
+### Install MySQL database
+###     ---> Done (passes yamllint and '--check')
 
     apt-get install -y mysql-server mysql-client
 
- Allow any host to connect
+### Allow any host to connect 
+###     ---> Done (maybe???).  passes '--check''
 
     sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
+# Stopped here on 10-13-2022
 ## 2. Start Database Service
   - Start the database service
 

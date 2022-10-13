@@ -1,5 +1,5 @@
 ---
-- name: Setup mysql
+- name: Setup MySQL
   hosts: db
   become: true
   become_method: sudo
@@ -19,13 +19,28 @@
           - configparser
           - flask
           - flask-sqlalchemy
-      # - name: Allow all hosts to connect
-      #   shell:
+    - name: Install MySQL on db
+      ansible.builtin.apt:
+        pkg:
+          - mysql-server
+          - mysql-client
+    - name: Allow all hosts to connect
+      ansible.builtin.shell:
+      args:
+        cmd: "sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf"
       # - name: Start the mysql
-      #   service:
-      # - name: Create database
-      #   mysql_db:
-      # - name: Create database users
+      #   service: ####### pick up here.  can't figure out how to start the service and some error occurs with the user step.
+    - name: Create guestbook database
+      community.mysql.mysql_db:
+        name: guestbook
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+    - name: Create database users
+      community.mysql.mysql_user:
+        name: db_user
+        password: Passw0rd
+        priv: '*.*:ALL'
+        state: present
       #   mysql_user:
 - name: Setup guestbook application
   hosts: web
