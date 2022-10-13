@@ -4,7 +4,7 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Install Python
+    - name: Install Python on db
       ansible.builtin.apt:
         pkg:
           - python3
@@ -13,14 +13,12 @@
           - build-essential
           - python3-pip
           - python3-mysqldb
-    - name: Install Python dependencies
+    - name: Install Python dependencies on db
       ansible.builtin.pip:
         name:
           - configparser
           - flask
           - flask-sqlalchemy
-      # LEFT OFF HERE, PICK UP TOMORROW.
-      # PASSING YAMLLINT AND "--check" up to this point
       # - name: Allow all hosts to connect
       #   shell:
       # - name: Start the mysql
@@ -34,7 +32,7 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Install Python and its dependencies
+    - name: Install Python on web
       ansible.builtin.apt:
         pkg:
           - python3
@@ -43,10 +41,17 @@
           - build-essential
           - python3-pip
           - python3-mysqldb
-      # - name: Install flask
-      #   pip:
-      # - name: Download guestbook source code
-      #   git:
+    - name: Install Python dependencies on web
+      ansible.builtin.pip:
+        name:
+          - configparser
+          - flask
+          - flask-sqlalchemy
+    - name: Download guestbook source code on web
+      ansible.builtin.git:
+        repo: https://github.com/jrrickerson/flask-guestbook
+        dest: /opt/flask-guestbook
+        separate_git_dir: /opt/flask-guestbook.git
     - name: Check if application is running
       shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
       register: process_id
