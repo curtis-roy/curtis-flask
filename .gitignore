@@ -9,7 +9,7 @@ pyvenv.cfg
 *.pyc
 *.swp
 *.out
-
+core.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
