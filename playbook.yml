@@ -9,10 +9,11 @@
         pkg:
           - python3
           - python3-setuptools
-          - python3-dev
-          - build-essential
           - python3-pip
           - python3-mysqldb
+          - python3-pymysql
+          - python3-dev
+          - build-essential
     - name: Install Python dependencies on db
       ansible.builtin.pip:
         name:
@@ -25,16 +26,25 @@
           - mysql-server
           - mysql-client
     - name: Allow all hosts to connect
-      ansible.builtin.shell:
-      args:
-        cmd: "sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf"
-      # - name: Start the mysql
-      #   service: ####### pick up here.  can't figure out how to start the service and some error occurs with the user step.
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        search_string: 'bind-address = *'
+        line: bind-address = 0.0.0.0
+        create: yes
+        mode: 0644
+      # ansible.builtin.shell:
+      # args:
+      #   cmd: "sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf"
+      #   creates: /etc/mysql/mysql.conf.d/mysqld.cnf
+    - name: Start the mysql service
+      ansible.builtin.service:
+        name: mysql
+        state: started
     - name: Create guestbook database
       community.mysql.mysql_db:
         name: guestbook
         state: present
-        login_unix_socket: /run/mysqld/mysqld.sock
+        # login_unix_socket: /run/mysqld/mysqld.sock
     - name: Create database users
       community.mysql.mysql_user:
         name: db_user
@@ -65,14 +75,24 @@
     - name: Download guestbook source code on web
       ansible.builtin.git:
         repo: https://github.com/jrrickerson/flask-guestbook
+        version: master
         dest: /opt/flask-guestbook
         separate_git_dir: /opt/flask-guestbook.git
     - name: Check if application is running
-      shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
-      register: process_id
-      changed_when: process_id.stdout != ""
+      community.general.pids:
+        name: flask
+      register: flask_pid
+      # shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
+      # register: process_id
+      # changed_when: process_id.stdout != ""
     - name: Stop the application
-      shell: "kill {{ process_id.stdout }}"
-      when: process_id.stdout != ""
+      ansible.builtin.systemd:
+        name: "{{ flask_pid }}"
+        state: restarted
+      # shell: "kill {{ process_id.stdout }}"
+      # when: process_id.stdout|length > 0
       # - name: Start the application
-      #   shell:
+      # ansible.builtin.systemd:
+      #   name: flask
+      #   state: started
+        
