@@ -17,6 +17,7 @@
     - name: Install Python dependencies on db
       ansible.builtin.pip:
         name:
+          - psutil
           - configparser
           - flask
           - flask-sqlalchemy
@@ -30,7 +31,7 @@
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         search_string: 'bind-address = *'
         line: bind-address = 0.0.0.0
-        create: yes
+        create: true
         mode: 0644
       # ansible.builtin.shell:
       # args:
@@ -38,12 +39,14 @@
       #   creates: /etc/mysql/mysql.conf.d/mysqld.cnf
     - name: Start the mysql service
       ansible.builtin.service:
-        name: mysql
+        service: mysql
         state: started
+      ignore_errors: "{{ ansible_check_mode }}"
     - name: Create guestbook database
       community.mysql.mysql_db:
         name: guestbook
         state: present
+      ignore_errors: "{{ ansible_check_mode }}"
         # login_unix_socket: /run/mysqld/mysqld.sock
     - name: Create database users
       community.mysql.mysql_user:
@@ -51,6 +54,7 @@
         password: Passw0rd
         priv: '*.*:ALL'
         state: present
+      ignore_errors: "{{ ansible_check_mode }}"        
       #   mysql_user:
 - name: Setup guestbook application
   hosts: web
@@ -69,6 +73,7 @@
     - name: Install Python dependencies on web
       ansible.builtin.pip:
         name:
+          - psutil
           - configparser
           - flask
           - flask-sqlalchemy
@@ -81,6 +86,7 @@
     - name: Check if application is running
       community.general.pids:
         name: flask
+      ignore_errors: "{{ ansible_check_mode }}"
       register: flask_pid
       # shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
       # register: process_id
@@ -89,10 +95,10 @@
       ansible.builtin.systemd:
         name: "{{ flask_pid }}"
         state: restarted
+      ignore_errors: "{{ ansible_check_mode }}"
       # shell: "kill {{ process_id.stdout }}"
       # when: process_id.stdout|length > 0
       # - name: Start the application
       # ansible.builtin.systemd:
       #   name: flask
       #   state: started
-        

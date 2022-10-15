@@ -60,8 +60,9 @@ Start web server in a background process
 
     sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
-# Stopped here on 10-13-2022
+
 ## 2. Start Database Service
+### might be done, can't really tell in '--check' mode
   - Start the database service
 
         service mysqld start
