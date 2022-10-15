@@ -70,6 +70,7 @@ pluggy==0.13.1
 prettytable==0.7.2
 prometheus-client==0.7.1
 prompt-toolkit==2.0.9
+psutil==5.9.2
 ptyprocess==0.6.0
 py==1.11.0
 pyasn1==0.4.5
