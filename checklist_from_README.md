@@ -73,6 +73,6 @@ Install python dependencies
         mysql> GRANT ALL ON *.* to db_user@'%' IDENTIFIED BY 'Passw0rd';
 
 ### TODO
-###     ---> Haven't figure out how to do this.
+###     ---> Haven't figured out how to do this.
   - Configure database credentials and parameters for the app
         The app looks for a configuration file at '/opt/guestbook/vars.ini'
