@@ -86,6 +86,13 @@
         version: master
         dest: /opt/flask-guestbook
         separate_git_dir: /opt/flask-guestbook.git
+    # - name: Copy ini file to web
+    #   ansible.builtin.copy:
+    #     backup: true
+    #     remote_src: true
+    #     src: /home/croy/curtis-flask/vars.ini
+    #     dest: /opt/guestbook/vars.ini
+    #     mode: preserve
     - name: Check if application is running
       community.general.pids:
         name: app.py
