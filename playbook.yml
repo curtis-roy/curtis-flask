@@ -21,6 +21,8 @@
           - configparser
           - flask
           - flask-sqlalchemy
+          - virtualenv: /flask-lab/venv
+          - virtualenv_site_packages: true
     - name: Install MySQL on db
       ansible.builtin.apt:
         pkg:
@@ -33,10 +35,10 @@
         line: bind-address = 0.0.0.0
         create: true
         mode: 0644
-      # ansible.builtin.shell:
-      # args:
-      #   cmd: "sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf"
-      #   creates: /etc/mysql/mysql.conf.d/mysqld.cnf
+        # ansible.builtin.shell:
+        # args:
+        #   cmd: "sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf"
+        #   creates: /etc/mysql/mysql.conf.d/mysqld.cnf
     - name: Start the mysql service
       ansible.builtin.service:
         service: mysql
@@ -47,14 +49,13 @@
         name: guestbook
         state: present
       ignore_errors: "{{ ansible_check_mode }}"
-        # login_unix_socket: /run/mysqld/mysqld.sock
     - name: Create database users
       community.mysql.mysql_user:
         name: db_user
         password: Passw0rd
         priv: '*.*:ALL'
         state: present
-      ignore_errors: "{{ ansible_check_mode }}"        
+      ignore_errors: "{{ ansible_check_mode }}"
       #   mysql_user:
 - name: Setup guestbook application
   hosts: web
@@ -77,6 +78,8 @@
           - configparser
           - flask
           - flask-sqlalchemy
+          - virtualenv: /flask-lab/venv
+          - virtualenv_site_packages: true
     - name: Download guestbook source code on web
       ansible.builtin.git:
         repo: https://github.com/jrrickerson/flask-guestbook
@@ -85,20 +88,19 @@
         separate_git_dir: /opt/flask-guestbook.git
     - name: Check if application is running
       community.general.pids:
-        name: flask
-      ignore_errors: "{{ ansible_check_mode }}"
+        name: app.py
       register: flask_pid
+      ignore_errors: "{{ ansible_check_mode }}"
       # shell: "ps -ef |grep -v grep | grep -w flask |awk '{print $2}'"
       # register: process_id
       # changed_when: process_id.stdout != ""
     - name: Stop the application
       ansible.builtin.systemd:
         name: "{{ flask_pid }}"
-        state: restarted
+        state: stopped
       ignore_errors: "{{ ansible_check_mode }}"
-      # shell: "kill {{ process_id.stdout }}"
-      # when: process_id.stdout|length > 0
-      # - name: Start the application
-      # ansible.builtin.systemd:
-      #   name: flask
-      #   state: started
+    - name: Start the application
+      ansible.builtin.script: /opt/flask-guestbook/app.py nohup flask run -h 0.0.0.0 -p 8080 &
+      args:
+        executable: python3
+      ignore_errors: "{{ ansible_check_mode }}"
